@@ -1,6 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableHighlight, Alert, TouchableWithoutFeedback, Keyboard, Image } from 'react-native';
-import { verticalScale, moderateScale } from './dimensions';
+import { StyleSheet, Text, View, TextInput, TouchableHighlight, Alert, TouchableWithoutFeedback, Keyboard, Image, AsyncStorage } from 'react-native';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -12,8 +11,8 @@ export default class App extends React.Component {
   }
 
   onLogIn = () => {
-    Alert.alert("TeamId entered is " + this.state.teamId);
-    Alert.alert("IP Addr is " + this.state.ipAddress);
+    AsyncStorage.setItem("teamId", this.state.teamId);
+    AsyncStorage.setItem("ipAddress", this.state.ipAddress);
   }
 
   render() {
