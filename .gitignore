@@ -1,0 +1,4 @@
+node_modules
+.watchmanconfig
+package-lock.json
+.expo
