@@ -64,7 +64,6 @@ class HomeScreen extends React.Component {
           team: teamId,
           ip: ipAddress
         });
-        Alert.alert("Loaded!");
       });
     });
   }
