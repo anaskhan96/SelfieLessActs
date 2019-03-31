@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableHighlight, Alert, TouchableWithoutFeedback, Keyboard, Image, AsyncStorage } from 'react-native';
-import { createStackNavigator, createAppContainer } from 'react-navigation';
+import { StyleSheet, Text, View, TextInput, TouchableHighlight, Alert, TouchableWithoutFeedback, Keyboard, Image, AsyncStorage, KeyboardAvoidingView } from 'react-native';
+import { createStackNavigator, createAppContainer, Header } from 'react-navigation';
 
 class LoginScreen extends React.Component {
   static navigationOptions = {
@@ -21,6 +21,12 @@ class LoginScreen extends React.Component {
     this.props.navigation.navigate("Home", { name: "Home" });
   }
 
+  componentDidMount = () => {
+    AsyncStorage.getItem("teamId").then((teamId) => {
+      if (teamId != null) this.props.navigation.navigate("Home", { name: "Home" });
+    });
+  }
+
   render() {
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -32,6 +38,7 @@ class LoginScreen extends React.Component {
           <TouchableHighlight style={styles.button} onPress={this.onLogIn}>
             <Text style={{ fontSize: 17 }}>LOG IN</Text>
           </TouchableHighlight>
+          <View style={{ height: 100 }} />
         </View>
       </TouchableWithoutFeedback>
     );
@@ -41,6 +48,7 @@ class LoginScreen extends React.Component {
 class HomeScreen extends React.Component {
   static navigationOptions = {
     title: 'Home',
+    headerLeft: null,
   };
 
   constructor(props) {
