@@ -1,10 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableHighlight, Alert, TouchableWithoutFeedback, Keyboard, Image, AsyncStorage, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableHighlight, Alert, TouchableWithoutFeedback, Keyboard, Image, AsyncStorage, Button } from 'react-native';
 import { createStackNavigator, createAppContainer, Header } from 'react-navigation';
 
 class LoginScreen extends React.Component {
   static navigationOptions = {
-    title: 'SelfieLess Acts',
+    title: 'SelfieLessActs',
+    headerLeft: null,
+    headerRight: null,
   };
 
   constructor(props) {
