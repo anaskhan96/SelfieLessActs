@@ -105,17 +105,12 @@ class HomeScreen extends React.Component {
             categories.push(key);
           }
           this.setState({ categories: categories });
-          console.log(this.state);
         }).catch(err => {
           console.error(err);
           Alert.alert('Error fetching categories :- ' + err);
         });
       });
     });
-  }
-
-  setModalVisible = (visible) => {
-    this.setState({ modalVisible: visible });
   }
 
   render() {
