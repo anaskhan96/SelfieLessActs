@@ -153,10 +153,6 @@ class HomeScreen extends React.Component {
     });
   }
 
-  addImage = () => {
-    console.log('Add image clicked.');
-  }
-
   render() {
     return (
       <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
@@ -262,6 +258,8 @@ class CameraScreen extends React.Component {
 
   saveImage = (imgB64) => {
     console.log('Save image called');
+    this.props.navigation.navigate("ActAdd", { imgB64: imgB64 });
+    this.toggleModal(false);
   }
 
   render() {
@@ -329,7 +327,7 @@ class CameraScreen extends React.Component {
                 </TouchableHighlight>
                 <TouchableHighlight style={styles.button}
                   onPress={() => {
-                    this.saveImage(this.statew.capturedImgB64);
+                    this.saveImage(this.state.capturedImgB64);
                   }}>
                   <Text style={{ fontSize: 17 }}>SAVE IMAGE</Text>
                 </TouchableHighlight>
@@ -339,6 +337,48 @@ class CameraScreen extends React.Component {
         </View>
       );
     }
+  }
+}
+
+class ActAddScreen extends React.Component {
+  static navigationOptions = {
+    title: 'Add a new act'
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      imgB64: '',
+      username: '',
+      caption: '',
+      category: '',
+    };
+  }
+
+  componentDidMount = () => {
+    this.setState({
+      imgB64: this.props.navigation.getParam('imgB64'),
+    });
+  }
+
+  saveAct = () => {
+    console.log('Save act called');
+  }
+
+  render() {
+    return (
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={styles.container}>
+          <TextInput style={styles.textInput} placeholder="Enter a valid username" onChangeText={(username) => this.setState({ username })} />
+          <TextInput style={styles.textInput} placeholder="Enter a caption" onChangeText={(caption) => this.setState({ caption })} />
+          <TextInput style={styles.textInput} placeholder="Enter a valid category" onChangeText={(category) => this.setState({ category })} />
+          <TouchableHighlight style={styles.button} onPress={this.saveAct}>
+            <Text style={{ fontSize: 17 }}>ADD ACT</Text>
+          </TouchableHighlight>
+          <View style={{ height: 200 }} />
+        </View>
+      </TouchableWithoutFeedback>
+    )
   }
 }
 
@@ -375,6 +415,7 @@ const MainNavigator = createStackNavigator({
   Login: { screen: LoginScreen },
   Home: { screen: HomeScreen },
   Camera: { screen: CameraScreen },
+  ActAdd: { screen: ActAddScreen },
 });
 
 const App = createAppContainer(MainNavigator);
