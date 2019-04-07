@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableHighlight, Alert, TouchableWithoutFeedback, Keyboard, Image, AsyncStorage, Button } from 'react-native';
+import { Modal, StyleSheet, Text, View, TextInput, TouchableHighlight, Alert, TouchableWithoutFeedback, Keyboard, Image, AsyncStorage, Button } from 'react-native';
 import { createStackNavigator, createAppContainer } from 'react-navigation';
 import Menu, { MenuItem } from 'react-native-material-menu';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -83,8 +83,16 @@ class HomeScreen extends React.Component {
       ip: 'YOUR IP',
       categories: ['Loading...'],
       currentCategory: 'Click Here',
-      acts: [{ actId: 'NO_ACTS', text: 'No category selected' }]
+      acts: [{ actId: 'NO_ACTS', text: 'No category selected' }],
+      modalVisible: false,
+      currentImgB64: ''
     }
+  }
+
+  toggleModal = (visible) => {
+    this.setState({
+      modalVisible: visible,
+    });
   }
 
   onLogOut = () => {
@@ -135,8 +143,13 @@ class HomeScreen extends React.Component {
   }
 
   viewImage = (key) => {
-    // Render image in a popup.
     console.log(key);
+    this.setState({
+      currentImgB64: this.state.acts[key].imgB64,
+    }, () => {
+      console.log(this.state.currentImgB64);
+      this.toggleModal(true);
+    });
   }
 
   addImage = () => {
@@ -192,6 +205,25 @@ class HomeScreen extends React.Component {
             <Text style={{ fontSize: 17 }}>ADD IMAGE</Text>
           </TouchableHighlight>
         </View>
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={this.state.modalVisible}
+          onRequestClose={() => {
+            Alert.alert('Closed.');
+          }}>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+            <View>
+              <Image source={{ uri: `data:image/jpg;base64,${this.state.currentImgB64}`, width: 300, height: 300 }} resizeMode='contain' />
+              <TouchableHighlight style={styles.button}
+                onPress={() => {
+                  this.toggleModal(!this.state.modalVisible);
+                }}>
+                <Text style={{ fontSize: 17 }}>GO BACK</Text>
+              </TouchableHighlight>
+            </View>
+          </View>
+        </Modal>
       </View>
     )
   }
