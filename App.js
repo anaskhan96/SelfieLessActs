@@ -215,7 +215,7 @@ class HomeScreen extends React.Component {
           }}>
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
             <View>
-              <Image source={{ uri: `data:image/jpg;base64,${this.state.currentImgB64}`, width: 300, height: 300 }} resizeMode='contain' />
+              <Image source={{ uri: `data:image/jpg;base64,${this.state.currentImgB64}`, width: 350, height: 350 }} resizeMode='contain' />
               <TouchableHighlight style={styles.button}
                 onPress={() => {
                   this.toggleModal(!this.state.modalVisible);
@@ -234,11 +234,34 @@ class CameraScreen extends React.Component {
   state = {
     hasCameraPermission: null,
     type: Camera.Constants.Type.back,
+    modalVisible: false,
+    capturedImgB64: '',
   };
+  _camera = null;
 
   async componentDidMount() {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     this.setState({ hasCameraPermission: status === 'granted' });
+  }
+
+  toggleModal = (visible) => {
+    this.setState({
+      modalVisible: visible,
+    })
+  }
+
+  takePic() {
+    this._camera.takePictureAsync({ skipProcessing: true, base64: true }).then(data => {
+      console.log(data.base64);
+      this.setState({
+        capturedImgB64: data.base64,
+      });
+      this.toggleModal(true);
+    });
+  }
+
+  saveImage = (imgB64) => {
+    console.log('Save image called');
   }
 
   render() {
@@ -250,7 +273,7 @@ class CameraScreen extends React.Component {
     } else {
       return (
         <View style={{ flex: 1 }}>
-          <Camera style={{ flex: 1 }} type={this.state.type}>
+          <Camera style={{ flex: 1 }} type={this.state.type} ref={(ref) => this._camera = ref}>
             <View
               style={{
                 flex: 1,
@@ -259,7 +282,7 @@ class CameraScreen extends React.Component {
               }}>
               <TouchableOpacity
                 style={{
-                  flex: 0.1,
+                  flex: 1,
                   alignSelf: 'flex-end',
                   alignItems: 'center',
                 }}
@@ -271,12 +294,48 @@ class CameraScreen extends React.Component {
                   });
                 }}>
                 <Text
-                  style={{ fontSize: 18, marginBottom: 10, color: 'white' }}>
+                  style={{ fontSize: 20, marginBottom: 12, color: 'white' }}>
                   {' '}Flip{' '}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  flex: 1,
+                  alignSelf: 'flex-end',
+                  alignItems: 'center',
+                }} onPress={this.takePic.bind(this)}>
+                <Text
+                  style={{ fontSize: 20, marginBottom: 12, color: 'white' }}>
+                  {' '}Take Photo{' '}
                 </Text>
               </TouchableOpacity>
             </View>
           </Camera>
+          <Modal
+            animationType="slide"
+            transparent={false}
+            visible={this.state.modalVisible}
+            onRequestClose={() => {
+              Alert.alert('Closed.');
+            }}>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+              <View>
+                <Image source={{ uri: `data:image/jpg;base64,${this.state.capturedImgB64}`, width: 350, height: 350 }} resizeMode='contain' />
+                <TouchableHighlight style={styles.button}
+                  onPress={() => {
+                    this.toggleModal(!this.state.modalVisible);
+                  }}>
+                  <Text style={{ fontSize: 17 }}>GO BACK</Text>
+                </TouchableHighlight>
+                <TouchableHighlight style={styles.button}
+                  onPress={() => {
+                    this.saveImage(this.statew.capturedImgB64);
+                  }}>
+                  <Text style={{ fontSize: 17 }}>SAVE IMAGE</Text>
+                </TouchableHighlight>
+              </View>
+            </View>
+          </Modal>
         </View>
       );
     }
