@@ -83,7 +83,7 @@ class HomeScreen extends React.Component {
       ip: 'YOUR IP',
       categories: ['Loading...'],
       currentCategory: 'Click Here',
-      acts: ['NO_ACTS']
+      acts: [{ actId: 'NO_ACTS', text: 'No category selected' }]
     }
   }
 
@@ -119,6 +119,12 @@ class HomeScreen extends React.Component {
   loadActs = (category) => {
     let actsApi = 'http://' + this.state.ip + '/api/v1/categories/' + category + '/acts';
     console.log('Making call to ' + actsApi);
+    this.setState({
+      acts: [{
+        actId: 'NO_ACTS',
+        text: 'Please wait while we fetch acts for category ' + category
+      }]
+    })
     fetch(actsApi).then(response => response.json()).then(res => {
       console.log(res);
       this.setState({ acts: res });
@@ -159,9 +165,9 @@ class HomeScreen extends React.Component {
         <View style={{ flex: 5 }}>
           <ScrollView>
             {this.state.acts.map((value, key) => {
-              if (value == "NO_ACTS")
+              if (value.actId == "NO_ACTS")
                 return (
-                  <Text style={styles.text} key={key}>No acts to display for the chosen category</Text>
+                  <Text style={styles.text} key={key}>{value.text}</Text>
                 )
               return (
                 <View key={key}>
@@ -178,7 +184,7 @@ class HomeScreen extends React.Component {
             })}
           </ScrollView>
         </View>
-        <View style={{ flex: 0.5, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'stretch', alignContent: 'stretch' }}>
+        <View style={{ flex: 0.6, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'stretch', alignContent: 'stretch' }}>
           <TouchableHighlight style={styles.button} onPress={this.onLogOut}>
             <Text style={{ fontSize: 17 }}>LOG OUT</Text>
           </TouchableHighlight>
