@@ -141,13 +141,13 @@ class HomeScreen extends React.Component {
     return (
       <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
         <View style={{ flex: 0.4 }}>
-          <Text style={styles.minorText}>{this.state.team} :- {this.state.ip}</Text>
+          <Text style={styles.text}>{this.state.team} :- {this.state.ip}</Text>
         </View>
         <View style={{ flex: 0.4, flexDirection: 'row', alignItems: 'stretch' }}>
-          <Text style={styles.minorText}>Select Category: </Text>
+          <Text style={styles.text}>Select Category: </Text>
           <Menu
             ref={this.setMenuRef}
-            button={<Text onPress={this.showMenu} style={styles.minorText}>{this.state.currentCategory}</Text>}
+            button={<Text onPress={this.showMenu} style={styles.text}>{this.state.currentCategory}</Text>}
           >
             {this.state.categories.map((value, key) => {
               return (
@@ -165,10 +165,10 @@ class HomeScreen extends React.Component {
                 )
               return (
                 <View key={key}>
-                  <Text style={styles.text}>actId: {value.actId}</Text>
-                  <Text style={styles.text}>username: {value.username}</Text>
-                  <Text style={styles.text}>timestamp: {value.timestamp}</Text>
-                  <Text style={styles.text}>caption: {value.caption}</Text>
+                  <Text style={styles.minorText}>actId: {value.actId}</Text>
+                  <Text style={styles.minorText}>username: {value.username}</Text>
+                  <Text style={styles.minorText}>timestamp: {value.timestamp}</Text>
+                  <Text style={styles.minorText}>caption: {value.caption}</Text>
                   <TouchableHighlight style={styles.button} onPress={() => this.viewImage(key)}>
                     <Text style={{ fontSize: 17 }}>VIEW IMAGE</Text>
                   </TouchableHighlight>
@@ -199,8 +199,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   minorText: {
-    fontSize: 17,
-    padding: 5,
+    fontSize: 15,
+    padding: 6,
   },
   text: {
     fontSize: 17,
