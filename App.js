@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableHighlight, Alert, TouchableWithoutFeedback, Keyboard, Image, AsyncStorage, Button } from 'react-native';
 import { createStackNavigator, createAppContainer } from 'react-navigation';
+import Menu, { MenuItem } from 'react-native-material-menu';
 
 class LoginScreen extends React.Component {
   static navigationOptions = {
@@ -18,6 +19,10 @@ class LoginScreen extends React.Component {
   }
 
   onLogIn = () => {
+    if (this.state.teamId == "" || this.state.ipAddress == "") {
+      Alert.alert("Inputs cannot be empty");
+      return;
+    }
     AsyncStorage.setItem("teamId", this.state.teamId);
     AsyncStorage.setItem("ipAddress", this.state.ipAddress);
     this.props.navigation.navigate("Home", { name: "Home" });
@@ -36,7 +41,7 @@ class LoginScreen extends React.Component {
           <Image source={require('./assets/selfie_icon.png')} style={{ width: 100, height: 100 }} />
           <Text style={styles.text}>Welcome to SelfieLessActs!</Text>
           <TextInput style={styles.textInput} placeholder="Enter your TEAM ID" onChangeText={(teamId) => this.setState({ teamId })} />
-          <TextInput style={styles.textInput} placeholder="Enter your IP" onChangeText={(ipAddress) => this.setState({ ipAddress })} />
+          <TextInput style={styles.textInput} placeholder="Enter your IP + PORT" onChangeText={(ipAddress) => this.setState({ ipAddress })} />
           <TouchableHighlight style={styles.button} onPress={this.onLogIn}>
             <Text style={{ fontSize: 17 }}>LOG IN</Text>
           </TouchableHighlight>
@@ -52,13 +57,30 @@ class HomeScreen extends React.Component {
     title: 'Home',
     headerLeft: null,
   };
+  _menu = null;
+
+  setMenuRef = ref => {
+    this._menu = ref;
+  };
+
+  hideMenu = (key) => {
+    this._menu.hide();
+    if (this.state.categories[key] != 'Loading...')
+      this.setState({ currentCategory: this.state.categories[key] });
+  };
+
+  showMenu = () => {
+    this._menu.show();
+  };
 
   constructor(props) {
     super(props);
     this.state = {
       team: 'YOUR TEAM',
       ip: 'YOUR IP',
-      modalVisible: false
+      modalVisible: false,
+      categories: ['Loading...'],
+      currentCategory: 'Click Here'
     }
   }
 
@@ -74,6 +96,19 @@ class HomeScreen extends React.Component {
         this.setState({
           team: teamId,
           ip: ipAddress
+        });
+        let categoryApi = 'http://' + this.state.ip + '/api/v1/categories';
+        console.log('Making call to ' + categoryApi);
+        fetch(categoryApi).then(response => response.json()).then(res => {
+          let categories = [];
+          for (let key in res) {
+            categories.push(key);
+          }
+          this.setState({ categories: categories });
+          console.log(this.state);
+        }).catch(err => {
+          console.error(err);
+          Alert.alert('Error fetching categories :- ' + err);
         });
       });
     });
@@ -92,7 +127,20 @@ class HomeScreen extends React.Component {
             <Text style={{ fontSize: 17 }}>LOG OUT</Text>
           </TouchableHighlight>
         </View>
-      </View>
+        <View style={{ flex: 1, flexDirection: 'row' }}>
+          <Text style={styles.text}>Select Category: </Text>
+          <Menu
+            ref={this.setMenuRef}
+            button={<Text onPress={this.showMenu} style={styles.text}>{this.state.currentCategory}</Text>}
+          >
+            {this.state.categories.map((value, key) => {
+              return (
+                <MenuItem onPress={() => this.hideMenu(key)} key={key}>{value}</MenuItem>
+              )
+            })}
+          </Menu>
+        </View>
+      </View >
     )
   }
 }
