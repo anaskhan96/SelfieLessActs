@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableHighlight, Alert, TouchableWithoutFeedback, Keyboard, Image, AsyncStorage, Button } from 'react-native';
-import { createStackNavigator, createAppContainer, Header } from 'react-navigation';
+import { createStackNavigator, createAppContainer } from 'react-navigation';
 
 class LoginScreen extends React.Component {
   static navigationOptions = {
@@ -57,7 +57,8 @@ class HomeScreen extends React.Component {
     super(props);
     this.state = {
       team: 'YOUR TEAM',
-      ip: 'YOUR IP'
+      ip: 'YOUR IP',
+      modalVisible: false
     }
   }
 
@@ -78,15 +79,20 @@ class HomeScreen extends React.Component {
     });
   }
 
+  setModalVisible = (visible) => {
+    this.setState({ modalVisible: visible });
+  }
+
   render() {
     return (
-      < View style={styles.container} >
-        <Text style={styles.text}>{this.state.team}</Text>
-        <Text style={styles.text}>{this.state.ip}</Text>
-        <TouchableHighlight style={styles.button} onPress={this.onLogOut}>
-          <Text style={{ fontSize: 17 }}>LOG OUT</Text>
-        </TouchableHighlight>
-      </View >
+      <View style={styles.container}>
+        <View style={{ flex: 1, flexDirection: 'row' }}>
+          <Text style={styles.text}>{this.state.team}-{this.state.ip}</Text>
+          <TouchableHighlight style={styles.button} onPress={this.onLogOut}>
+            <Text style={{ fontSize: 17 }}>LOG OUT</Text>
+          </TouchableHighlight>
+        </View>
+      </View>
     )
   }
 }
