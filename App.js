@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableHighlight, Alert, TouchableWithoutFeedback, Keyboard, Image, AsyncStorage, Button } from 'react-native';
 import { createStackNavigator, createAppContainer } from 'react-navigation';
 import Menu, { MenuItem } from 'react-native-material-menu';
+import { ScrollView } from 'react-native-gesture-handler';
 
 class LoginScreen extends React.Component {
   static navigationOptions = {
@@ -81,7 +82,8 @@ class HomeScreen extends React.Component {
       team: 'YOUR TEAM',
       ip: 'YOUR IP',
       categories: ['Loading...'],
-      currentCategory: 'Click Here'
+      currentCategory: 'Click Here',
+      acts: ['NO_ACTS']
     }
   }
 
@@ -118,28 +120,34 @@ class HomeScreen extends React.Component {
     let actsApi = 'http://' + this.state.ip + '/api/v1/categories/' + category + '/acts';
     console.log('Making call to ' + actsApi);
     fetch(actsApi).then(response => response.json()).then(res => {
-      // Store acts somewhere.
       console.log(res);
+      this.setState({ acts: res });
     }).catch(err => {
       console.log(err);
       Alert.alert('Error fetching acts for ' + category + ' :- ' + err);
     })
   }
 
+  viewImage = (key) => {
+    // Render image in a popup.
+    console.log(key);
+  }
+
+  addImage = () => {
+    console.log('Add image clicked.');
+  }
+
   render() {
     return (
-      <View style={styles.container}>
-        <View style={{ flex: 1, flexDirection: 'row' }}>
-          <Text style={styles.text}>{this.state.team}-{this.state.ip}</Text>
-          <TouchableHighlight style={styles.button} onPress={this.onLogOut}>
-            <Text style={{ fontSize: 17 }}>LOG OUT</Text>
-          </TouchableHighlight>
+      <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
+        <View style={{ flex: 0.4 }}>
+          <Text style={styles.minorText}>{this.state.team} :- {this.state.ip}</Text>
         </View>
-        <View style={{ flex: 1, flexDirection: 'row' }}>
-          <Text style={styles.text}>Select Category: </Text>
+        <View style={{ flex: 0.4, flexDirection: 'row', alignItems: 'stretch' }}>
+          <Text style={styles.minorText}>Select Category: </Text>
           <Menu
             ref={this.setMenuRef}
-            button={<Text onPress={this.showMenu} style={styles.text}>{this.state.currentCategory}</Text>}
+            button={<Text onPress={this.showMenu} style={styles.minorText}>{this.state.currentCategory}</Text>}
           >
             {this.state.categories.map((value, key) => {
               return (
@@ -148,7 +156,37 @@ class HomeScreen extends React.Component {
             })}
           </Menu>
         </View>
-      </View >
+        <View style={{ flex: 5 }}>
+          <ScrollView>
+            {this.state.acts.map((value, key) => {
+              if (value == "NO_ACTS")
+                return (
+                  <Text style={styles.text} key={key}>No acts to display for the chosen category</Text>
+                )
+              return (
+                <View key={key}>
+                  <Text style={styles.text}>actId: {value.actId}</Text>
+                  <Text style={styles.text}>username: {value.username}</Text>
+                  <Text style={styles.text}>timestamp: {value.timestamp}</Text>
+                  <Text style={styles.text}>caption: {value.caption}</Text>
+                  <TouchableHighlight style={styles.button} onPress={() => this.viewImage(key)}>
+                    <Text style={{ fontSize: 17 }}>VIEW IMAGE</Text>
+                  </TouchableHighlight>
+                </View>
+                //<View style={{ borderBottomColor: 'black', borderBottomWidth: 1 }}></View>
+              )
+            })}
+          </ScrollView>
+        </View>
+        <View style={{ flex: 0.5, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'stretch', alignContent: 'stretch' }}>
+          <TouchableHighlight style={styles.button} onPress={this.onLogOut}>
+            <Text style={{ fontSize: 17 }}>LOG OUT</Text>
+          </TouchableHighlight>
+          <TouchableHighlight style={styles.button} onPress={this.addImage}>
+            <Text style={{ fontSize: 17 }}>ADD IMAGE</Text>
+          </TouchableHighlight>
+        </View>
+      </View>
     )
   }
 }
@@ -159,6 +197,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  minorText: {
+    fontSize: 17,
+    padding: 5,
   },
   text: {
     fontSize: 17,
