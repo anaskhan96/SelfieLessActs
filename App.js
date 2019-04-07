@@ -46,7 +46,7 @@ class LoginScreen extends React.Component {
           <TouchableHighlight style={styles.button} onPress={this.onLogIn}>
             <Text style={{ fontSize: 17 }}>LOG IN</Text>
           </TouchableHighlight>
-          <View style={{ height: 100 }} />
+          <View style={{ height: 200 }} />
         </View>
       </TouchableWithoutFeedback>
     );
