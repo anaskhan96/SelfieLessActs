@@ -3,7 +3,7 @@ import { Modal, StyleSheet, Text, View, TextInput, TouchableHighlight, Alert, To
 import { createStackNavigator, createAppContainer } from 'react-navigation';
 import Menu, { MenuItem } from 'react-native-material-menu';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Camera, Permissions } from 'expo';
+import { Camera, Permissions, ImageManipulator } from 'expo';
 
 class LoginScreen extends React.Component {
   static navigationOptions = {
@@ -246,14 +246,14 @@ class CameraScreen extends React.Component {
     })
   }
 
-  takePic() {
-    this._camera.takePictureAsync({ skipProcessing: true, base64: true }).then(data => {
-      console.log(data.base64);
-      this.setState({
-        capturedImgB64: data.base64,
-      });
-      this.toggleModal(true);
+  async takePic() {
+    let data = await this._camera.takePictureAsync({ skipProcessing: true, base64: true })
+    let resizedPic = await ImageManipulator.manipulateAsync(data.uri, [{ resize: { width: 350, height: 350 } }], { compress: 0, format: "jpg", base64: true });
+    console.log(resizedPic.base64);
+    this.setState({
+      capturedImgB64: resizedPic.base64,
     });
+    this.toggleModal(true);
   }
 
   saveImage = (imgB64) => {
