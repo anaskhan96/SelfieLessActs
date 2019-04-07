@@ -65,8 +65,10 @@ class HomeScreen extends React.Component {
 
   hideMenu = (key) => {
     this._menu.hide();
-    if (this.state.categories[key] != 'Loading...')
+    if (this.state.categories[key] != 'Loading...') {
       this.setState({ currentCategory: this.state.categories[key] });
+      this.loadActs(this.state.categories[key]);
+    }
   };
 
   showMenu = () => {
@@ -78,7 +80,6 @@ class HomeScreen extends React.Component {
     this.state = {
       team: 'YOUR TEAM',
       ip: 'YOUR IP',
-      modalVisible: false,
       categories: ['Loading...'],
       currentCategory: 'Click Here'
     }
@@ -111,6 +112,18 @@ class HomeScreen extends React.Component {
         });
       });
     });
+  }
+
+  loadActs = (category) => {
+    let actsApi = 'http://' + this.state.ip + '/api/v1/categories/' + category + '/acts';
+    console.log('Making call to ' + actsApi);
+    fetch(actsApi).then(response => response.json()).then(res => {
+      // Store acts somewhere.
+      console.log(res);
+    }).catch(err => {
+      console.log(err);
+      Alert.alert('Error fetching acts for ' + category + ' :- ' + err);
+    })
   }
 
   render() {
