@@ -353,6 +353,7 @@ class ActAddScreen extends React.Component {
       caption: '',
       category: '',
       ip: '',
+      processingImage: true,
     };
   }
 
@@ -381,7 +382,7 @@ class ActAddScreen extends React.Component {
     fetch(addActApi, {
       method: 'POST',
       headers: {
-        'ContentType': 'application/json'
+        'Content-Type': 'application/json;charset=utf-8'
       },
       body: JSON.stringify(newAct)
     }).then(response => {
