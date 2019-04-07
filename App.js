@@ -258,8 +258,8 @@ class CameraScreen extends React.Component {
 
   saveImage = (imgB64) => {
     console.log('Save image called');
-    this.props.navigation.navigate("ActAdd", { imgB64: imgB64 });
     this.toggleModal(false);
+    this.props.navigation.navigate("ActAdd", { imgB64: imgB64 });
   }
 
   render() {
@@ -352,17 +352,47 @@ class ActAddScreen extends React.Component {
       username: '',
       caption: '',
       category: '',
+      ip: '',
     };
   }
 
   componentDidMount = () => {
-    this.setState({
-      imgB64: this.props.navigation.getParam('imgB64'),
+    AsyncStorage.getItem('ipAddress').then(ip => {
+      this.setState({
+        ip: ip,
+        imgB64: this.props.navigation.getParam('imgB64'),
+      });
     });
   }
 
   saveAct = () => {
     console.log('Save act called');
+    let newAct = {
+      actId: (new Date).getTime(),
+      username: this.state.username,
+      timestamp: "10-10-2019:45-23-03",
+      caption: this.state.caption,
+      categoryName: this.state.category,
+      imgB64: this.state.imgB64
+    }
+    console.log(newAct);
+    let addActApi = 'http://' + this.state.ip + "/api/v1/acts";
+    console.log('Making a call to ' + addActApi);
+    fetch(addActApi, {
+      method: 'POST',
+      headers: {
+        'ContentType': 'application/json'
+      },
+      body: JSON.stringify(newAct)
+    }).then(response => {
+      if (response.status == 201) {
+        Alert.alert('Act successfully added!');
+      } else {
+        Alert.alert("Act couldn't be added :/");
+      }
+    }).catch(err => {
+      Alert.alert('API to add act failed: ' + err);
+    });
   }
 
   render() {
@@ -374,6 +404,9 @@ class ActAddScreen extends React.Component {
           <TextInput style={styles.textInput} placeholder="Enter a valid category" onChangeText={(category) => this.setState({ category })} />
           <TouchableHighlight style={styles.button} onPress={this.saveAct}>
             <Text style={{ fontSize: 17 }}>ADD ACT</Text>
+          </TouchableHighlight>
+          <TouchableHighlight style={styles.button} onPress={() => this.props.navigation.navigate("Home", { name: "Home" })}>
+            <Text style={{ fontSize: 17 }}>GO TO HOME</Text>
           </TouchableHighlight>
           <View style={{ height: 200 }} />
         </View>
