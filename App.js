@@ -109,19 +109,33 @@ class HomeScreen extends React.Component {
           team: teamId,
           ip: ipAddress
         });
-        let categoryApi = 'http://' + this.state.ip + '/api/v1/categories';
-        console.log('Making call to ' + categoryApi);
-        fetch(categoryApi).then(response => response.json()).then(res => {
+        this.loadCategories();
+      });
+    });
+  }
+
+  loadCategories = () => {
+    let categoryApi = 'http://' + this.state.ip + '/api/v1/categories';
+    console.log('Making call to ' + categoryApi);
+    fetch(categoryApi).then(response => {
+      if (response.status == 200) {
+        response.json().then(res => {
           let categories = [];
           for (let key in res) {
             categories.push(key);
           }
           this.setState({ categories: categories });
         }).catch(err => {
-          console.log(err);
-          Alert.alert('Error fetching categories :- ' + err);
+          Alert.alert("Error parsing response json while fetching categories :- " + err);
         });
-      });
+      } else if (response.status == 204) {
+        Alert.alert("No categories found :/");
+      } else {
+        Alert.alert("Error fetching categories :- " + response.status + " " + response.statusText);
+      }
+    }).catch(err => {
+      console.log(err);
+      Alert.alert('Error fetching categories :- ' + err);
     });
   }
 
@@ -133,10 +147,19 @@ class HomeScreen extends React.Component {
         actId: 'NO_ACTS',
         text: 'Please wait while we fetch acts for category ' + category
       }]
-    })
-    fetch(actsApi).then(response => response.json()).then(res => {
-      console.log(res);
-      this.setState({ acts: res });
+    });
+    fetch(actsApi).then(response => {
+      if (response.status == 200) {
+        response.json().then(res => {
+          this.setState({ acts: res });
+        }).catch(err => {
+          Alert.alert("Error parsing json while fetching acts :- " + err);
+        });
+      } else if (response.status == 204) {
+        Alert.alert("No acts found for given category :/");
+      } else {
+        Alert.alert("Error fetching acts for given category :- " + response.status + " " + response.text);
+      }
     }).catch(err => {
       console.log(err);
       Alert.alert('Error fetching acts for ' + category + ' :- ' + err);
@@ -183,7 +206,6 @@ class HomeScreen extends React.Component {
                 <View key={key}>
                   <Text style={styles.minorText}>actId: {value.actId}</Text>
                   <Text style={styles.minorText}>username: {value.username}</Text>
-                  <Text style={styles.minorText}>timestamp: {value.timestamp}</Text>
                   <Text style={styles.minorText}>caption: {value.caption}</Text>
                   <TouchableHighlight style={styles.button} onPress={() => this.viewImage(key)}>
                     <Text style={{ fontSize: 17 }}>VIEW IMAGE</Text>
@@ -389,7 +411,7 @@ class ActAddScreen extends React.Component {
       if (response.status == 201) {
         Alert.alert('Act successfully added!');
       } else {
-        Alert.alert("Act couldn't be added :/");
+        Alert.alert("Act couldn't be added :/ Check if the usernames, category are valid.");
       }
     }).catch(err => {
       Alert.alert('API to add act failed: ' + err);
